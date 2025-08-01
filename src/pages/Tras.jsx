@@ -18,9 +18,9 @@ export default function CameraChatApp() {
         video: { width: 640, height: 480 }, 
         audio: false 
       });
-      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.play();
         streamRef.current = stream;
         setIsCameraOn(true);
         setCameraError('');
@@ -52,8 +52,7 @@ export default function CameraChatApp() {
       };
       setMessages([...messages, newMessage]);
       setInputMessage('');
-      
-      // Simulate a response
+
       setTimeout(() => {
         const response = {
           id: messages.length + 2,
@@ -110,36 +109,42 @@ export default function CameraChatApp() {
               </button>
             </div>
           </div>
+
+          <div className="flex-1 p-6 flex items-center justify-center relative">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              width="640"
+              height="480"
+              style={{ border: '', zIndex: 9999, position: 'absolute', height : "85%", zIndex : "1"}}
+              onLoadedMetadata={() => videoRef.current?.play()}
+              className="top-9 left-0"
+            />
           
-          <div className="flex-1 p-6 flex items-center justify-center">
-            <div className="relative w-full h-full max-w-lg">
-              {isCameraOn ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover rounded-xl shadow-lg"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-600">
-                  <div className="text-center">
-                    <Camera className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-400 text-lg mb-2">Camera is off</p>
-                    <p className="text-gray-500 text-sm">Click Start to begin video feed</p>
+           {(!isCameraOn && 
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-white text-center">
+                <div className="flex flex-col items-center space-y-4 bg-gradient-to-br from-purple-900/50 to-black/40 backdrop-blur-lg rounded-2xl p-8 border border-purple-400/20 shadow-2xl">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-purple-500/30 rounded-full animate-pulse"></div>
+                    <div className="relative p-4 bg-purple-600/20 rounded-full backdrop-blur-sm border border-purple-400/30">
+                      <Video size={28} className="text-purple-100" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-lg font-medium text-purple-100">Camera Feed</div>
+                    <div className="text-sm text-purple-200/70">Click Start to begin</div>
                   </div>
                 </div>
-              )}
-              
-              {cameraError && (
-                <div className="absolute inset-0 bg-red-900/50 rounded-xl flex items-center justify-center">
-                  <div className="text-center p-4">
-                    <p className="text-red-300 font-medium">{cameraError}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+          )}
+
           </div>
+
+          {cameraError && (
+            <div className="px-6 pb-4 text-center text-red-400">{cameraError}</div>
+          )}
         </div>
       </div>
 
